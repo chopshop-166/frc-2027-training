@@ -6,11 +6,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
-import com.chopshop166.chopshoplib.leds.ColorFormat;
-import com.chopshop166.chopshoplib.leds.SegmentConfig;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
-import com.chopshop166.chopshoplib.maps.WPILedMap;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.chopshop166.chopshoplib.states.PIDValues;
@@ -107,42 +104,6 @@ public class Shrimp extends RobotMap {
                 VecBuilder.fill(0.02, 0.02, 0.01),
                 VecBuilder.fill(0.1, 0.1, 0.01));
     }
-
-    @Override
-    public WPILedMap getLedMap() {
-        var result = new WPILedMap(11, 0);
-        var leds = result.ledBuffer;
-
-        SegmentConfig spoiler = leds.segment(11, ColorFormat.GRB).tags("Intake", "Elevator", "Vision", "Fun");
-        return result;
-    }
-
-    // @Override
-    // public VisionMap getVisionMap() {
-    // // Front left and front right camera locations
-    // // Cam mounted 9.029 in. sideways of center(left), 9.029 in. forward of
-    // center,
-    // // 9.75 in. up from center. Mounted 0 degrees around x axis (roll), angled up
-    // // 65.752 degrees, and rotated side-to-side 45 degrees facing left
-    // Transform3d robotToCamFL = new Transform3d(
-    // new Translation3d(Units.inchesToMeters(9.029), Units.inchesToMeters(9.029),
-    // Units.inchesToMeters(9.75)),
-    // new Rotation3d(0, Units.degreesToRadians(-65.752),
-    // Units.degreesToRadians(45)));
-
-    // // Cam mounted 9.029 in. sideways of center(right), 9.029 in. forward of
-    // center,
-    // // 9.75 in. up from center. Mounted 0 degrees around x axis (roll), angled up
-    // // 64.752 degrees, and rotated side-to-side 45 degrees facing right
-    // Transform3d robotToCamFR = new Transform3d(
-    // new Translation3d(Units.inchesToMeters(9.029), Units.inchesToMeters(9.029),
-    // Units.inchesToMeters(9.75)),
-    // new Rotation3d(0, Units.degreesToRadians(-64.752),
-    // Units.degreesToRadians(-45)));
-
-    // return new VisionMap(new CameraSource("FLCamera", robotToCamFL),
-    // new CameraSource("FRCamera", robotToCamFR));
-    // }
 
     @Override
     public void setupLogging() {

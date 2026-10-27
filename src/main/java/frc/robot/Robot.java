@@ -9,12 +9,9 @@ import java.util.function.DoubleUnaryOperator;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
-import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,17 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
-import frc.robot.maps.subsystems.HoodMap.HoodPresets;
-import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
-import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Drive.RotationTargets;
-import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Roller;
-import frc.robot.subsystems.Shooter;
 
 public final class Robot extends CommandRobot {
 
@@ -49,20 +38,12 @@ public final class Robot extends CommandRobot {
     // Subsystems
     // Make them public so that the sequences can access them
     public Drive drive = new Drive(map.getDriveMap(), () -> {
-        return driveScaler.applyAsDouble(-driveController.getLeftX());
+        return -driveController.getLeftX();
     }, () -> {
-        return driveScaler.applyAsDouble(-driveController.getLeftY());
+        return -driveController.getLeftY();
     }, () -> {
-        return driveScaler.applyAsDouble(-driveController.getRightX());
+        return -driveController.getRightX();
     }, map.getVisionMap());
-
-    public Shooter shooter = new Shooter(map.getShooterMap(), "Shooter");
-    public Roller intake = new Roller(map.getIntakeMap(), "Intake");
-    public Deployer deployer = new Deployer(map.getDeployerMap(),
-            RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
-    public Roller feeder = new Roller(map.getFeederMap(), "Feeder");
-    public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
-    public Hood hood = new Hood(map.getHoodMap(), RobotUtils.deadbandAxis(.1, () -> copilotController.getRightY()));
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
@@ -105,7 +86,7 @@ public final class Robot extends CommandRobot {
         // may be added.
         Logger.start();
 
-        CommandScheduler.getInstance().schedule(sequences.operatorSafeState());
+        CommandScheduler.getInstance().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
 
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -130,69 +111,19 @@ public final class Robot extends CommandRobot {
     @Override
     public void disabledInit() {
         super.disabledInit();
-        CommandScheduler.getInstance().schedule(sequences.operatorSafeState().ignoringDisable(true));
     }
 
     @Override
     public void teleopInit() {
         super.teleopInit();
-        CommandScheduler.getInstance().schedule(hood.moveToAngle(HoodPresets.DOWN));
     }
 
     @Override
     public void configureButtonBindings() {
-        driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.HUB))
-                .onFalse(drive.rotationTargetOff());
-
-        driveController.b()
-                .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        // copilot stop
-        copilotController.start().onTrue(sequences.operatorSafeState());
-        copilotController.back().onTrue(hood.zero().ignoringDisable(true));
-        // feed shooter
-
-        // // Intake
-        copilotController.a().whileTrue(sequences.intake())
-                .onFalse(intake.safeStateCmd());
-        // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
-        // HoodPresets.CLOSE));
-        // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-        // HoodPresets.AUTO_ANGLE));
-        // copilotController.b()
-        // .whileTrue(
-        // hood.moveToAngle(HoodPresets.AUTO_ANGLE).alongWith(drive.rotateToTarget(RotationTargets.HUB)))
-        // .onFalse(hood.safeStateCmd());
-        // .onFalse(sequences.operatorSafeState());
-
-        copilotController.b()
-                .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
-        // HoodPresets.CLOSE))
-        // .onFalse(sequences.operatorSafeState());
-        copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        copilotController.rightBumper().onTrue(sequences.retractIntake());
-        copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
-        // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
-        // HoodPresets.NETWORK_TABLES));
-        copilotController.povDown().onTrue(hood.autoZero());
 
     }
 
     private final void registerNamedCommands() {
-        NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("PathEnd", new PrintCommand("path ended"));
-        NamedCommands.registerCommand("Shoot",
-                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE)
-                        .withName("Shoot"));
-        NamedCommands.registerCommand("Stop Shooting",
-                sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
     }
 
     @Override
@@ -213,8 +144,6 @@ public final class Robot extends CommandRobot {
     @Override
 
     public void setDefaultCommands() {
-        // hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () ->
-        // -copilotController.getRightY())));
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {

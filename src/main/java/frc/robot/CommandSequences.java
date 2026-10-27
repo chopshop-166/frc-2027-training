@@ -1,17 +1,11 @@
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
-import frc.robot.maps.subsystems.HoodMap.HoodPresets;
-import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
-import frc.robot.subsystems.Drive;
 
 public class CommandSequences {
 
@@ -22,49 +16,6 @@ public class CommandSequences {
     }
 
     // make sequences for intake and shooter.
-
-    public Command intake() {
-        return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
-    }
-
-    public Command rollOut() {
-        return robot.intake.rollOut().alongWith(robot.activeFloor.rollOut(), robot.feeder.rollOut());
-    }
-
-    public Command retractIntake() {
-        return robot.deployer.moveTo(DeployerPresets.IN).alongWith(robot.intake.safeStateCmd());
-    }
-
-    public Command shootAutoAlign(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
-        return robot.hood.moveToAngle(hoodAngle)
-                .alongWith(robot.shooter.spinUp(shotSpeed).alongWith(
-                        robot.drive.rotateToCalcTarget())
-                        .andThen(feedShooterWiggle()));
-    }
-
-    public Command shoot(ShooterPresets shotSpeed, HoodPresets hoodangle) {
-        return robot.hood.moveToAngle(hoodangle)
-                .alongWith(robot.shooter.spinUp(shotSpeed)).andThen(feedShooterWiggle());
-    }
-
-    public Command feedShooter() {
-        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn());
-    }
-
-    public Command feedShooterWiggle() {
-        return feedShooter().alongWith(
-                repeatingSequence(waitSeconds(.25), robot.deployer.moveToNonOwning(DeployerPresets.WIGGLE_IN),
-                        waitSeconds(.25),
-                        robot.deployer.moveToNonOwning(DeployerPresets.OUT)))
-                .andThen(robot.deployer.moveTo(DeployerPresets.OUT));
-    }
-
-    public Command operatorSafeState() {
-        return robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
-                robot.feeder.safeStateCmd(), robot.shooter.safeStateCmd(),
-                robot.drive.rotationTargetOff(), robot.hood.safeStateCmd());
-
-    }
 
     public Command setRumble(ButtonXboxController controller, int rumbleAmount) {
         return runOnce(() -> {
