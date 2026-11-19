@@ -45,8 +45,8 @@ public final class Robot extends CommandRobot {
         return -driveController.getRightX();
     }, map.getVisionMap());
 
-    public Claw leftClaw = new Claw(0, 1);
-    public Claw rightClaw = new Claw(2, 3);
+    public Claw leftClaw = new Claw(map.getLeftClawmap());
+    public Claw rightClaw = new Claw(map.getRightClawmap());
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);

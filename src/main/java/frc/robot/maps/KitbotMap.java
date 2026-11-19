@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.pneumatics.CtreDSolenoid;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -32,6 +33,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.maps.subsystems.Clawmap;
 
 @RobotMapFor("00:80:2F:40:A7:9D")
 public class KitbotMap extends RobotMap {
@@ -127,6 +129,16 @@ public class KitbotMap extends RobotMap {
                                         10.72),
                                 Units.inchesToMeters(8.24),
                                 new Rotation3d(0, Units.degreesToRadians(-68), Units.degreesToRadians(193)))));
+    }
+
+    @Override
+    public Clawmap getLeftClawmap() {
+        return new Clawmap(new CtreDSolenoid(0, 1));
+    }
+
+    @Override
+    public Clawmap getRightClawmap() {
+        return new Clawmap(new CtreDSolenoid(2, 3));
     }
 
     @Override

@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
+import frc.robot.maps.subsystems.Clawmap;
+
+import frc.robot.maps.subsystems.Clawmap;
 
 public class RobotMap {
 
@@ -16,6 +19,14 @@ public class RobotMap {
 
     public VisionMap getVisionMap() {
         return new VisionMap();
+    }
+
+    public Clawmap getLeftClawmap() {
+        return new Clawmap();
+    }
+
+    public Clawmap getRightClawmap() {
+        return new Clawmap();
     }
 
     public void setupLogging() {
