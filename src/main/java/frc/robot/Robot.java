@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Roller;
 
 public final class Robot extends CommandRobot {
 
@@ -44,6 +45,7 @@ public final class Robot extends CommandRobot {
         return -driveController.getRightX();
     }, map.getVisionMap());
 
+    public Roller roller = new Roller(map.getRollerMap());
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
@@ -120,6 +122,8 @@ public final class Robot extends CommandRobot {
     @Override
     public void configureButtonBindings() {
 
+        copilotController.x().onTrue(roller.outtake()); //.onFalse(roller.idling());
+        copilotController.y().onTrue(roller.intake()); //.onFalse(roller.idling());
     }
 
     private final void registerNamedCommands() {

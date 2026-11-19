@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
+import frc.robot.maps.subsystems.RollerMap;
 
 public class RobotMap {
 
@@ -16,6 +17,10 @@ public class RobotMap {
 
     public VisionMap getVisionMap() {
         return new VisionMap();
+    }
+
+    public RollerMap getRollerMap() {
+        return new RollerMap();
     }
 
     public void setupLogging() {

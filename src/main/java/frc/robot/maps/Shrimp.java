@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
+import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.chopshop166.chopshoplib.states.PIDValues;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.maps.subsystems.RollerMap;
 
 @RobotMapFor("00:80:2F:19:7B:A3")
 public class Shrimp extends RobotMap {
@@ -103,6 +105,11 @@ public class Shrimp extends RobotMap {
                 config, holonomicDrive,
                 VecBuilder.fill(0.02, 0.02, 0.01),
                 VecBuilder.fill(0.1, 0.1, 0.01));
+    }
+
+    @Override
+    public RollerMap getRollerMap() {
+        return new RollerMap(new CSSparkFlex(10));
     }
 
     @Override
